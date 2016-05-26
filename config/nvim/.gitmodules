@@ -1,0 +1,3 @@
+[submodule "bin/matcher"]
+	path = bin/matcher
+	url = git@github.com:burke/matcher.git

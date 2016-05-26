@@ -1,0 +1,3 @@
+[submodule "config/nvim/bin/matcher"]
+	path = config/nvim/bin/matcher
+	url = git@github.com:burke/matcher.git

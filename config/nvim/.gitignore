@@ -1,0 +1,5 @@
+.viminfo
+.netrwhist
+autoload
+bundle
+matcher
