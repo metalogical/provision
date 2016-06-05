@@ -4,8 +4,25 @@ general {
     interval = 5
 }
 
+order += "wireless wlp3s0"
+order += "battery 1"
 order += "tztime local"
 
 tztime local {
-    format = "%a    %b %d    %I:%M %p"
+    format = "%a %b %d %I:%M %p"
+}
+
+battery 1 {
+        format = "%status %percentage"
+        format_down = "No battery"
+        status_chr = "⚇"
+        status_bat = "⚡"
+        status_full = "☻"
+        path = "/sys/class/power_supply/BAT%d/uevent"
+        low_threshold = 10
+}
+
+wireless wlp3s0 {
+        format_up = "%essid"
+        format_down = "down"
 }
