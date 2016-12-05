@@ -132,7 +132,6 @@ bar {
 }
 
 bindsym $mod+m move workspace to output right
-bindsym $mod+n move workspace to output left
 
 # Affirm setup
 # exec xrandr --output DP-3 --rotate right --pos 2560x-200
