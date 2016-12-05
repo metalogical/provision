@@ -17,28 +17,41 @@ function fish_prompt
   set -l blue (set_color -o blue)
   set -l normal (set_color normal)
 
+  if [ (whoami) = "root" ]
+    set_color --bold red
+    echo -n -s "sudo "
+  end
+
+  set_color --bold blue
+  echo -n -s (prompt_pwd)
+
+  if set -q VIRTUAL_ENV
+    set_color --bold blue
+    echo " ×"
+  end
+
   if [ (_git_branch_name) ]
     set -l git_branch (_git_branch_name)
 
     if [ (_is_git_dirty) ]
-      set git_info " $yellow$git_branch"
+      set_color --bold yellow
+      echo -n -s " " (_git_branch_name)
     else
-      set git_info " $cyan$git_branch"
+      set_color --bold cyan
+      echo -n -s " " (_git_branch_name)
     end
   end
 
-  if [ (whoami) = "root" ]
-    set me sudo
-    set me "$red$me "
+  switch $fish_bind_mode
+    case insert
+      set_color --bold black
+    case default
+      set_color --bold red
+    case replace-one
+      set_color --bold red
+    case visual
+      set_color --bold red
   end
+  echo -n -s " ➜ "
 
-  set -l cwd (prompt_pwd)
-  if set -q VIRTUAL_ENV
-    set cwd "$cwd ×"
-  end
-  set cwd "$blue$cwd"
-
-  set -l arrow " $normal➜ "
-
-  echo -n -s "$me$venv$cwd$git_info$arrow"
 end

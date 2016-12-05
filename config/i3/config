@@ -40,6 +40,7 @@ bindsym $mod+Return exec i3-sensible-terminal
 bindsym $mod+space exec --no-startup-id i3-dmenu-desktop
 
 # lock screen
+exec "xautolock -time 3 -locker 'i3lock -c 000000' &"
 bindsym $mod+semicolon exec i3lock -c 000000
 
 # kill focused window
@@ -129,3 +130,9 @@ bar {
         inactive_workspace #000000 #000000 #ffffff
     }
 }
+
+bindsym $mod+m move workspace to output right
+bindsym $mod+n move workspace to output left
+
+# Affirm setup
+# exec xrandr --output DP-3 --rotate right --pos 2560x-200
