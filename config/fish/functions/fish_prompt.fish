@@ -1,13 +1,13 @@
 function fish_prompt
-	
+
   if not set -q -g __fish_robbyrussell_functions_defined
     set -g __fish_robbyrussell_functions_defined
     function _git_branch_name
       echo (git symbolic-ref HEAD ^/dev/null | sed -e 's|^refs/heads/||')
     end
-	
+
     function _is_git_dirty
-      echo (git status -s --ignore-submodules=dirty ^/dev/null)
+      git diff-files --no-ext-diff --quiet ^/dev/null >/dev/null; and git diff-index --no-ext-diff --quiet --cached HEAD ^/dev/null >/dev/null
     end
   end
 
@@ -25,21 +25,9 @@ function fish_prompt
   set_color --bold blue
   echo -n -s (prompt_pwd)
 
-  if set -q VIRTUAL_ENV
-    set_color --bold blue
-    echo " ×"
-  end
-
   if [ (_git_branch_name) ]
-    set -l git_branch (_git_branch_name)
-
-    if [ (_is_git_dirty) ]
-      set_color --bold yellow
-      echo -n -s " " (_git_branch_name)
-    else
-      set_color --bold cyan
-      echo -n -s " " (_git_branch_name)
-    end
+    set_color cyan
+    echo -n -s " " (_git_branch_name)
   end
 
   switch $fish_bind_mode
