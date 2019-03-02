@@ -11,24 +11,50 @@ endfunction
 let mapleader = "\<Space>"
 let maplocalleader = "\<Space>"
 
-" *** Load plugins
-runtime! configs/options.vim
-if len(g:loaded_plugins)
-  set nocompatible
-  filetype off
-  set rtp+=~/.config/nvim/bundle/Vundle.vim
-  call vundle#begin('~/.config/nvim/bundle')
+" buffer management; REQUIRES fzf, fzf.vim
+set hidden  " allow switching away from unsaved buffers
+nnoremap <silent> <Leader>bo :Files<CR>
+nnoremap <silent> <Leader>be :Explore<CR>
+nnoremap <silent> <Leader>bb :Buffers<CR>
+nnoremap <silent> <Leader>bw :bw<CR>
+nnoremap <silent> <Leader>bl :set buflisted<CR>
 
-  " load vundle
-  Plugin 'VundleVim/Vundle.vim'
+" latex-unicoder
+let g:unicoder_cancel_insert = 1
+inoremap <C-l> <Esc>:call unicoder#start(1)<CR>
 
-  " load plugins
-  for plug in g:loaded_plugins
-    Plugin plug
-  endfor
-
-  call vundle#end()
-endif
+" windowing
+set splitright
+set splitbelow
+nnoremap <silent> <m-CR> :split<CR>
+nnoremap <silent> <m-q> :wincmd q<CR>
+  " depend on vim-tmux-navigator plugin
+nnoremap <silent> <m-h> :TmuxNavigateLeft<CR>
+nnoremap <silent> <m-j> :TmuxNavigateDown<CR>
+nnoremap <silent> <m-k> :TmuxNavigateUp<CR>
+nnoremap <silent> <m-l> :TmuxNavigateRight<CR>
+  " rotation and movement
+nnoremap <silent> <m-R> :wincmd R<CR>
+nnoremap <silent> <m-r> :wincmd r<CR>
+nnoremap <silent> <m-H> :wincmd H<CR>
+nnoremap <silent> <m-J> :wincmd J<CR>
+nnoremap <silent> <m-K> :wincmd K<CR>
+nnoremap <silent> <m-L> :wincmd L<CR>
+  " terminal
+tnoremap <m-[> <C-\><C-n>
+tnoremap <silent> <m-CR> <C-\><C-n>:split<CR>
+tnoremap <silent> <m-q> <C-\><C-n>:wincmd q<CR>
+tnoremap <silent> <m-h> <C-\><C-n>:wincmd h<CR>
+tnoremap <silent> <m-j> <C-\><C-n>:wincmd j<CR>
+tnoremap <silent> <m-k> <C-\><C-n>:wincmd k<CR>
+tnoremap <silent> <m-l> <C-\><C-n>:wincmd l<CR>
+tnoremap <silent> <m-R> <C-\><C-n>:wincmd R<CR>
+tnoremap <silent> <m-r> <C-\><C-n>:wincmd r<CR>
+tnoremap <silent> <m-H> <C-\><C-n>:wincmd H<CR>
+tnoremap <silent> <m-J> <C-\><C-n>:wincmd J<CR>
+tnoremap <silent> <m-K> <C-\><C-n>:wincmd K<CR>
+tnoremap <silent> <m-L> <C-\><C-n>:wincmd L<CR>
+autocmd BufWinEnter,WinEnter term://* startinsert
 
 
 " *** Sanity
@@ -40,20 +66,11 @@ set number
 set rnu
 set background=dark
 set backspace=2 " make backspace not absolutely terrible
-tnoremap <Esc> <C-\><C-n> " neovim terminal mode escape
 set viminfo='10,\"100,n~/.config/nvim/.viminfo
-
-
-" *** Buffers navigation
-set hidden " allow hiding modified buffers without saving
-let g:netrw_bufsettings = 'noma nomod nu rnu nowrap ro nobl'
-nnoremap <silent> <Leader>be :Explore<CR>
-nnoremap <silent> <Leader>bo :Explore<CR>
-nnoremap <silent> <Leader>bq :lclose<CR>:bw<CR>
-nnoremap <silent> <Leader>bw :w<CR>
-nnoremap <silent> <Leader>bn :bnext<CR>
-nnoremap <silent> <Leader>bp :bprev<CR>
-
+" set clipboard^=unnamed " synchronize unnamed register with system clipboard
+  " display tabs & trailing spaces
+set list
+set listchars=tab:\|·,trail:·
 
 " *** Mouse events
 set ttyfast
@@ -61,7 +78,6 @@ set mouse=a
 if !has('nvim')
     set ttymouse=xterm2 " Works with iTerm2
 endif
-
 
 " *** Save cursor location on exit; depends on viminfo
 function! ResCur()
@@ -78,19 +94,49 @@ augroup resCur
 augroup END
 
 
-" *** statusline
-set laststatus=2
-if ! has('gui_running') " Speed up change in status bar when hitting escape
-    set ttimeoutlen=10
-    augroup FastEscape
-        autocmd!
-        au InsertEnter * set timeoutlen=0
-        au InsertLeave * set timeoutlen=1000
-    augroup END
-endif
+" LSP stuff
+let g:LanguageClient_autoStart = 1
+let g:LanguageClient_serverCommands = {
+    \ 'lean': ['node', '/usr/local/lib/node_modules/lean-language-server/lib/index.js', '--stdio'],
+    \ 'go': ['go-langserver'],
+    \ 'python': ['pyls'],
+    \ 'haskell': ['hie', '--lsp'],
+    \ 'reason': ['ocaml-language-server', '--stdio'],
+    \ 'ocaml': ['ocaml-language-server', '--stdio'],
+    \ }
+nnoremap <silent> <Leader>gi :call LanguageClient_textDocument_hover()<CR>
+nnoremap <silent> <Leader>gr :call LanguageClient_textDocument_references()<CR>
+nnoremap <silent> <Leader>gd :call LanguageClient_textDocument_definition()<CR>
 
+let g:gofmt_exe = 'goimports'
+let g:deoplete#enable_at_startup = 1
 
-" *** Load optional configs
-for conf_name in g:loaded_configs
-  exec "runtime! configs/" . conf_name . ".vim"
-endfor
+" add the byte offset to the end
+let g:airline_section_z = '%3p%% %#__accent_bold#%{g:airline_symbols.linenr}%4l%#__restore__#%#__accent_bold#/%L%{g:airline_symbols.maxlinenr}%#__restore__# :%3v:%o'
+
+" *** Plugins
+call plug#begin('~/.config/nvim/plugged')
+" UX
+Plug 'vim-airline/vim-airline'
+Plug 'junegunn/fzf', {'do': './install --bin'}
+Plug 'junegunn/fzf.vim'
+ " delete buffer without closing window/split
+Plug 'christoomey/vim-tmux-navigator'
+
+" text entry
+Plug 'joom/latex-unicoder.vim'
+
+" Autocomplete stuff
+Plug 'autozimu/LanguageClient-neovim', { 'do': ':UpdateRemotePlugins' }
+Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+
+" languages
+Plug 'leanprover/lean.vim'
+Plug 'tweekmonster/gofmt.vim'
+Plug 'idris-hackers/idris-vim'
+Plug 'rust-lang/rust.vim'
+Plug 'fatih/vim-go', {'do': ':GoInstallBinaries'}
+Plug 'reasonml-editor/vim-reason-plus'
+
+Plug 'tpope/vim-fugitive'
+call plug#end()

@@ -1,5 +1,3 @@
 .viminfo
 .netrwhist
-autoload
-bundle
-matcher
+plugged
